@@ -8,14 +8,24 @@ on:
 jobs:
   update-content:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
     
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+          
+      - name: Create directories
+        run: |
+          mkdir -p content/messages
+          mkdir -p scripts
           
       - name: Install dependencies
         run: |
@@ -38,6 +48,8 @@ jobs:
         
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
+        if: success()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public 
+          publish_dir: ./public
+          commit_message: 'Deploy: ${{ github.event.head_commit.message }}'
