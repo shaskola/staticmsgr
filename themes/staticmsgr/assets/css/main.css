@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'PSA-Code';
-    src: url('../fonts/psa-code.otf') format('opentype');
+    src: url('/staticmsgr/fonts/psa-code.otf') format('opentype');
 }
 
 :root[data-theme="light"] {
