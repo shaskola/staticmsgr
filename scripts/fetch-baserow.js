@@ -27,7 +27,7 @@ function createMarkdownContent(message) {
     const frontmatter = [
         '---',
         `title: "${message.ID}"`,
-        `date: ${moment(message['Send-Date']).format()}`,
+        `date: "${moment(message['Send-Date']).format('YYYY-MM-DDTHH:mm:ssZ')}"`,
         message.msgType?.id === 4727 ? 'type: "system"' : '',
         message.character?.[0]?.value ? `username: "${message.character[0].value}"` : '',
         message.avatar?.[0]?.url ? `avatar: "${message.avatar[0].url}"` : '',
