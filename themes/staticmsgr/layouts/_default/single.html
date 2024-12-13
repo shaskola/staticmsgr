@@ -10,7 +10,11 @@
         </div>
     </div>
     <div class="message-content">
-        {{ .Content }}
+        {{ if eq .Params.msgType 4724 }}
+            {{ upper .Content }}
+        {{ else }}
+            {{ .Content }}
+        {{ end }}
         {{ with .Params.image }}
             <img class="message-image" src="{{ . }}" alt="Message attachment">
         {{ end }}
