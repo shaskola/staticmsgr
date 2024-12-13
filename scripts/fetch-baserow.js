@@ -54,7 +54,7 @@ async function ensureContentDirectory() {
 }
 
 async function writeMessageFile(message) {
-    const filename = `${message.ID.padStart(5, '0')}-${message.msgType?.id === 4727 ? 'system' : 'message'}.md`;
+    const filename = `${String(message.ID).padStart(5, '0')}-${message.msgType?.id === 4727 ? 'system' : 'message'}.md`;
     const filepath = path.join(CONTENT_DIR, filename);
     const content = createMarkdownContent(message);
 
