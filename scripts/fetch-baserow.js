@@ -24,10 +24,27 @@ async function fetchMessages() {
 }
 
 function createMarkdownContent(message) {
+    // Validate and format the date
+    const sendDate = message['Send-Date'];
+    if (!sendDate) {
+        console.error('No Send-Date found for message:', message.ID);
+        return null;
+    }
+    
+    const parsedDate = moment(sendDate);
+    if (!parsedDate.isValid()) {
+        console.error('Invalid date for message:', message.ID, 'Date:', sendDate);
+        return null;
+    }
+
+    // Format date as: 2024-01-20T15:30:00-07:00
+    const formattedDate = parsedDate.format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+    console.log('Formatted date:', formattedDate, 'for message:', message.ID);
+
     const frontmatter = [
         '---',
         `title: "${message.ID}"`,
-        `date: "${moment(message['Send-Date']).format('YYYY-MM-DDTHH:mm:ssZ')}"`,
+        `date: ${formattedDate}`,
         message.msgType?.id === 4727 ? 'type: "system"' : '',
         message.character?.[0]?.value ? `username: "${message.character[0].value}"` : '',
         message.avatar?.[0]?.url ? `avatar: "${message.avatar[0].url}"` : '',
@@ -54,11 +71,17 @@ async function ensureContentDirectory() {
 }
 
 async function writeMessageFile(message) {
+    const content = createMarkdownContent(message);
+    if (!content) {
+        console.error('Failed to create content for message:', message.ID);
+        return;
+    }
+
     const filename = `${String(message.ID).padStart(5, '0')}-${message.msgType?.id === 4727 ? 'system' : 'message'}.md`;
     const filepath = path.join(CONTENT_DIR, filename);
-    const content = createMarkdownContent(message);
-
+    
     await fs.writeFile(filepath, content, 'utf8');
+    console.log('Written file:', filename);
 }
 
 async function main() {
