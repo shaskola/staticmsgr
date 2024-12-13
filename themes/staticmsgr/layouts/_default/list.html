@@ -1,0 +1,27 @@
+{{ define "main" }}
+    {{ range .Pages.ByDate.Reverse }}
+        {{ if eq .Params.type "system" }}
+            <div class="system-message">
+                {{ .Content }}
+            </div>
+        {{ else }}
+            <article class="message-card {{ if .Params.outgoing }}outgoing{{ end }}">
+                <div class="message-header">
+                    {{ if not .Params.outgoing }}
+                        <img class="avatar" src="{{ .Params.avatar | default "/images/default-avatar.png" }}" alt="{{ .Params.username }}">
+                    {{ end }}
+                    <div class="message-meta">
+                        <span class="username">{{ .Params.username }}</span>
+                        <span class="timestamp">{{ .Date.Format "15:04" }} {{ .Date.Format "01/02/2006" }}</span>
+                    </div>
+                </div>
+                <div class="message-content">
+                    {{ .Content }}
+                    {{ with .Params.image }}
+                        <img class="message-image" src="{{ . }}" alt="Message attachment">
+                    {{ end }}
+                </div>
+            </article>
+        {{ end }}
+    {{ end }}
+{{ end }}

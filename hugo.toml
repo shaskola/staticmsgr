@@ -1,0 +1,15 @@
+baseURL = 'http://example.org/'
+languageCode = 'en-us'
+title = 'Static Messenger'
+theme = 'staticmsgr'
+disableKinds = ['taxonomy', 'term']
+
+[params]
+  description = "A static messaging application built with Hugo"
+
+[markup.goldmark.renderer]
+  unsafe = true # Allows HTML in markdown files
+
+[outputs]
+  home = ["HTML"]
+  section = ["HTML"]

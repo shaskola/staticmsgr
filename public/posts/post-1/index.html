@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Post 1</title>
+    
+    <link rel="stylesheet" href="/css/main.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="group-info">
+                <img class="group-avatar" src="/images/groupchat.jpg" alt="Group Icon">
+                <h1 class="group-name">Not so secret ninjas</h1>
+            </div>
+            <button id="theme-toggle" class="theme-toggle">
+                <img class="theme-icon moon-icon" alt="Switch to dark mode" src="/images/heroicons-solid_moon.png">
+                <img class="theme-icon sun-icon" alt="Switch to light mode" src="/images/heroicons-solid_sun.png">
+            </button>
+        </header>
+        <main class="content-area">
+            
+<article class="message-card ">
+    <div class="message-header">
+        
+            <img class="avatar" src="/images/default-avatar.png" alt="">
+        
+        <div class="message-meta">
+            <span class="username"></span>
+            <span class="timestamp">09:00 01/15/2023</span>
+        </div>
+    </div>
+    <div class="message-content">
+        <p>Tempor proident minim aliquip reprehenderit dolor et ad anim Lorem duis sint eiusmod. Labore ut ea duis dolor. Incididunt consectetur proident qui occaecat incididunt do nisi Lorem. Tempor do laborum elit laboris excepteur eiusmod do. Eiusmod nisi excepteur ut amet pariatur adipisicing Lorem.</p>
+<p>Occaecat nulla excepteur dolore excepteur duis eiusmod ullamco officia anim in voluptate ea occaecat officia. Cillum sint esse velit ea officia minim fugiat. Elit ea esse id aliquip pariatur cupidatat id duis minim incididunt ea ea. Anim ut duis sunt nisi. Culpa cillum sit voluptate voluptate eiusmod dolor. Enim nisi Lorem ipsum irure est excepteur voluptate eu in enim nisi. Nostrud ipsum Lorem anim sint labore consequat do.</p>
+
+        
+    </div>
+</article>
+
+        </main>
+        <button id="scroll-bottom" class="scroll-bottom">
+            <img class="scroll-icon" alt="Scroll to bottom" src="/images/chevron-down.svg">
+        </button>
+    </div>
+    <script>
+        
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        const moonIcon = document.querySelector('.moon-icon');
+        const sunIcon = document.querySelector('.sun-icon');
+        
+        function updateThemeIcons(theme) {
+            if (theme === 'dark') {
+                moonIcon.style.display = 'none';
+                sunIcon.style.display = 'block';
+            } else {
+                moonIcon.style.display = 'block';
+                sunIcon.style.display = 'none';
+            }
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcons(newTheme);
+        });
+
+        
+        const scrollBottom = document.getElementById('scroll-bottom');
+        const contentArea = document.querySelector('.content-area');
+
+        scrollBottom.addEventListener('click', () => {
+            contentArea.scrollTo({
+                top: contentArea.scrollHeight,
+                behavior: 'smooth'
+            });
+        });
+
+        
+        window.addEventListener('load', () => {
+            contentArea.scrollTo({
+                top: contentArea.scrollHeight,
+                behavior: 'auto'
+            });
+        });
+
+        
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcons(savedTheme);
+    </script>
+</body>
+</html>

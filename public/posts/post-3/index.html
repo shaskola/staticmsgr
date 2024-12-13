@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Post 3</title>
+    
+    <link rel="stylesheet" href="/css/main.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="group-info">
+                <img class="group-avatar" src="/images/groupchat.jpg" alt="Group Icon">
+                <h1 class="group-name">Not so secret ninjas</h1>
+            </div>
+            <button id="theme-toggle" class="theme-toggle">
+                <img class="theme-icon moon-icon" alt="Switch to dark mode" src="/images/heroicons-solid_moon.png">
+                <img class="theme-icon sun-icon" alt="Switch to light mode" src="/images/heroicons-solid_sun.png">
+            </button>
+        </header>
+        <main class="content-area">
+            
+<article class="message-card ">
+    <div class="message-header">
+        
+            <img class="avatar" src="/images/default-avatar.png" alt="">
+        
+        <div class="message-meta">
+            <span class="username"></span>
+            <span class="timestamp">11:00 03/15/2023</span>
+        </div>
+    </div>
+    <div class="message-content">
+        <p>Occaecat aliqua consequat laborum ut ex aute aliqua culpa quis irure esse magna dolore quis. Proident fugiat labore eu laboris officia Lorem enim. Ipsum occaecat cillum ut tempor id sint aliqua incididunt nisi incididunt reprehenderit. Voluptate ad minim sint est aute aliquip esse occaecat tempor officia qui sunt. Aute ex ipsum id ut in est velit est laborum incididunt. Aliqua qui id do esse sunt eiusmod id deserunt eu nostrud aute sit ipsum. Deserunt esse cillum Lorem non magna adipisicing mollit amet consequat.</p>
+<p><img src="bryce-canyon.jpg" alt="Bryce Canyon National Park"></p>
+<p>Sit excepteur do velit veniam mollit in nostrud laboris incididunt ea. Amet eu cillum ut reprehenderit culpa aliquip labore laborum amet sit sit duis. Laborum id proident nostrud dolore laborum reprehenderit quis mollit nulla amet veniam officia id id. Aliquip in deserunt qui magna duis qui pariatur officia sunt deserunt.</p>
+
+        
+    </div>
+</article>
+
+        </main>
+        <button id="scroll-bottom" class="scroll-bottom">
+            <img class="scroll-icon" alt="Scroll to bottom" src="/images/chevron-down.svg">
+        </button>
+    </div>
+    <script>
+        
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        const moonIcon = document.querySelector('.moon-icon');
+        const sunIcon = document.querySelector('.sun-icon');
+        
+        function updateThemeIcons(theme) {
+            if (theme === 'dark') {
+                moonIcon.style.display = 'none';
+                sunIcon.style.display = 'block';
+            } else {
+                moonIcon.style.display = 'block';
+                sunIcon.style.display = 'none';
+            }
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcons(newTheme);
+        });
+
+        
+        const scrollBottom = document.getElementById('scroll-bottom');
+        const contentArea = document.querySelector('.content-area');
+
+        scrollBottom.addEventListener('click', () => {
+            contentArea.scrollTo({
+                top: contentArea.scrollHeight,
+                behavior: 'smooth'
+            });
+        });
+
+        
+        window.addEventListener('load', () => {
+            contentArea.scrollTo({
+                top: contentArea.scrollHeight,
+                behavior: 'auto'
+            });
+        });
+
+        
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcons(savedTheme);
+    </script>
+</body>
+</html>
