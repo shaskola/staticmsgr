@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'PSA-Code';
+    src: url('../fonts/psa-code.otf') format('opentype');
+}
+
 :root[data-theme="light"] {
     --bg-primary: #ffffff;
     --bg-secondary: #f5f5f5;
@@ -277,4 +282,8 @@ html[data-theme="dark"] .sun-icon {
 
 .button:hover {
     opacity: 0.9;
+}
+
+.message-card[data-msgtype="secret"] .message-content {
+    font-family: 'PSA-Code', 'Noto Sans', sans-serif;
 }

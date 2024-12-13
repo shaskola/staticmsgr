@@ -1,5 +1,5 @@
 {{ define "main" }}
-<article class="message-card {{ if .Params.outgoing }}outgoing{{ end }}">
+<article class="message-card {{ if .Params.outgoing }}outgoing{{ end }}" {{ if eq .Params.msgType "4724" }}data-msgtype="secret"{{ end }}>
     <div class="message-header">
         {{ if not .Params.outgoing }}
             <img class="avatar" src="{{ .Params.avatar | default "/images/default-avatar.png" }}" alt="{{ .Params.username }}">
