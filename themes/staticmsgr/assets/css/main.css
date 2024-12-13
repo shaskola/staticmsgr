@@ -1,6 +1,7 @@
 @font-face {
     font-family: 'PSA-Code';
     src: url('/staticmsgr/fonts/psa-code.otf') format('opentype');
+    font-display: swap;
 }
 
 :root[data-theme="light"] {
@@ -285,5 +286,7 @@ html[data-theme="dark"] .sun-icon {
 }
 
 .message-card[data-msgtype="secret"] .message-content {
-    font-family: 'PSA-Code', 'Noto Sans', sans-serif;
+    font-family: 'PSA-Code', 'Noto Sans', sans-serif !important;
+    font-weight: normal;
+    letter-spacing: 0.5px;
 }
