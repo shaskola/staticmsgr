@@ -2,7 +2,7 @@ name: Update Content
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Runs every 5 minutes
+    - cron: '0 3 * * *'  # Runs every day at 3am
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
