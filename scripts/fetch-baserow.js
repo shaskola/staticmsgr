@@ -89,13 +89,23 @@ function createMarkdownContent(message) {
     if (!parsedDate.isValid()) {
         console.error('%c❌ Invalid date for message:', 'color: #f44336; font-weight: bold;', {
             ID: message.ID,
-            date: sendDate
+            date: sendDate,
+            error: 'Date must be in ISO format'
         });
         return null;
     }
 
-    // Format date as: 2024-01-20T15:30:00Z
-    const formattedDate = parsedDate.format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+    // Ensure date is in ISO format: YYYY-MM-DDTHH:mm:ss.SSSZ
+    const formattedDate = parsedDate.toISOString();
+
+    // Log date processing
+    console.log('%c📅 Date Processing:', 'color: #2196F3; font-weight: bold;', {
+        original: sendDate,
+        parsed: parsedDate.format(),
+        formatted: formattedDate,
+        isValid: parsedDate.isValid(),
+        utcOffset: parsedDate.utcOffset()
+    });
 
     // Get message type ID for determining message category
     const msgTypeId = message.msgType?.id || 0;

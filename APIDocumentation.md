@@ -35,7 +35,7 @@ axios({
 | field_6532 | message | string | Message content |
 | field_6533 | msgType | integer/string | Message type (secret/system) |
 | field_6534 | Image | array | Message image attachments |
-| field_6535 | Send-Date | string | Message send date |
+| field_6535 | Send-Date | date | Accepts a date in ISO format |
 | field_6536 | Posted | boolean | Message posted status |
 | field_6537 | button1 | boolean | First button enabled |
 | field_6538 | button 1 text | string | First button text |
