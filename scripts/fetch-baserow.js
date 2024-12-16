@@ -5,13 +5,13 @@ const path = require('path');       // For handling file paths
 const moment = require('moment');   // For date manipulation
 
 // API configuration
-const BASEROW_URL = 'https://showcase.newhideaway.com/api/database/rows/table/736/';  // Baserow API endpoint
+const BASEROW_URL = 'https://showcase.newhideaway.com/api/database/rows/table/787/';  // Baserow API endpoint
 const CONTENT_DIR = path.join(process.cwd(), 'content', 'messages');  // Directory for markdown files
 
 // Message type constants
 const MSG_TYPE = {
-    SECRET: 4724,
-    SYSTEM: 4727
+    SECRET: 4753,
+    SYSTEM: 4754
 };
 
 /**
@@ -78,11 +78,11 @@ function createMarkdownContent(message) {
         `date: ${formattedDate}`,
         // Always include msgType in frontmatter
         `msgType: ${msgTypeId}`,
-        // Message type (system: 4727, secret: 4724)
+        // Message type (system: 4754, secret: 4753)
         msgTypeId === MSG_TYPE.SYSTEM ? 'type: "system"' : '',
         msgTypeId === MSG_TYPE.SECRET ? 'type: "secret"' : '',
         // Optional fields with null coalescing
-        message.character?.[0]?.value ? `username: "${message.character[0].value}"` : '',
+        message.characterlink?.[0]?.value ? `username: "${message.characterlink[0].value}"` : '',
         message.avatar?.[0]?.url ? `avatar: "${message.avatar[0].url}"` : '',
         message.Image?.[0]?.url ? `msgimage: "${message.Image[0].url}"` : '',
         message['button 1 text'] ? `button1: "${message['button 1 text']}"` : '',
