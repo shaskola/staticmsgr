@@ -118,7 +118,7 @@ html[data-theme="dark"] .sun-icon {
     flex-direction: column;
     gap: 1rem;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     scrollbar-width: thin;
     scrollbar-color: var(--accent-color) transparent;
 }
@@ -383,5 +383,31 @@ html[data-theme="dark"] .sun-icon {
     line-height: 1.2;
     width: 100%;
     word-break: break-word;
-    letter-spacing: 0.5em;
+    letter-spacing: 0.15em;
+}
+
+/* Timestamp styles */
+.timestamp {
+    font-size: 0.8rem;
+    color: #ACACAC;
+    opacity: 0.2;
+}
+
+/* Dark mode timestamp adjustment */
+html[data-theme="dark"] .timestamp {
+    color: #D6D6D6;
+}
+
+@media (max-width: 768px) {
+    .message-content[data-message-msgtype="4724"] {
+        font-size: 1.3em;
+        letter-spacing: 0.12em;
+    }
+}
+
+@media (max-width: 480px) {
+    .message-content[data-message-msgtype="4724"] {
+        font-size: 1.2em;
+        letter-spacing: 0.1em;
+    }
 }
