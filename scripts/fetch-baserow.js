@@ -20,6 +20,8 @@ const MSG_TYPE = {
  */
 async function fetchMessages() {
     try {
+        console.log('Fetching messages from:', BASEROW_URL);
+        
         // Make GET request to Baserow API with authentication
         const response = await axios({
             method: 'GET',
@@ -29,9 +31,26 @@ async function fetchMessages() {
             }
         });
 
+        console.log('API Response:', {
+            count: response.data.count,
+            next: response.data.next,
+            previous: response.data.previous,
+            resultsCount: response.data.results.length
+        });
+
+        // Log first message as sample
+        if (response.data.results.length > 0) {
+            console.log('Sample message structure:', JSON.stringify(response.data.results[0], null, 2));
+        }
+
         return response.data.results;
     } catch (error) {
-        console.error('Error fetching messages:', error.message);
+        console.error('Error fetching messages:', {
+            message: error.message,
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data
+        });
         return [];
     }
 }
@@ -42,6 +61,20 @@ async function fetchMessages() {
  * @returns {string|null} Markdown content or null if invalid
  */
 function createMarkdownContent(message) {
+    console.log('Creating markdown for message:', {
+        ID: message.ID,
+        hasDate: !!message['Send-Date'],
+        hasMessage: !!message.message,
+        msgType: message.msgType,
+        characterlink: message.characterlink,
+        avatar: message.avatar,
+        buttons: {
+            button1: message['button 1 text'],
+            button2: message['button 2 text'],
+            button3: message['button 3 text']
+        }
+    });
+
     // Validate and format the date
     const sendDate = message['Send-Date'];
     if (!sendDate) {
@@ -93,6 +126,7 @@ function createMarkdownContent(message) {
         message.message || ''  // Message content
     ].filter(Boolean).join('\n');  // Remove empty lines and join
 
+    console.log('Generated frontmatter:', frontmatter);
     return frontmatter;
 }
 
@@ -102,9 +136,17 @@ function createMarkdownContent(message) {
  */
 async function ensureContentDirectory() {
     try {
+        const dir = path.resolve(CONTENT_DIR);
+        console.log('Ensuring directory exists:', dir);
         await fs.mkdir(CONTENT_DIR, { recursive: true });  // Create directory if it doesn't exist
+        console.log('Directory ready:', dir);
     } catch (error) {
         if (error.code !== 'EEXIST') {  // Ignore "already exists" error
+            console.error('Error creating directory:', {
+                code: error.code,
+                message: error.message,
+                path: error.path
+            });
             throw error;
         }
     }
@@ -116,6 +158,8 @@ async function ensureContentDirectory() {
  * @returns {Promise<void>}
  */
 async function writeMessageFile(message) {
+    console.log('Writing message file for ID:', message.ID);
+    
     const content = createMarkdownContent(message);
     if (!content) {
         console.error('Failed to create content for message:', message.ID);
@@ -131,9 +175,25 @@ async function writeMessageFile(message) {
     }.md`;
     const filepath = path.join(CONTENT_DIR, filename);
     
+    console.log('Writing file:', {
+        filename,
+        filepath,
+        contentLength: content.length,
+        messageType: msgTypeId === MSG_TYPE.SYSTEM ? 'system' : 
+                    msgTypeId === MSG_TYPE.SECRET ? 'secret' : 'regular'
+    });
+
     // Write the file
-    await fs.writeFile(filepath, content, 'utf8');
-    console.log('Written file:', filename);
+    try {
+        await fs.writeFile(filepath, content, 'utf8');
+        console.log('Successfully written file:', filename);
+    } catch (error) {
+        console.error('Error writing file:', {
+            filename,
+            error: error.message,
+            code: error.code
+        });
+    }
 }
 
 /**
@@ -146,6 +206,7 @@ async function writeMessageFile(message) {
 async function main() {
     try {
         console.log('Starting content update process...');
+        console.log('Current working directory:', process.cwd());
         
         // Ensure content directory exists
         await ensureContentDirectory();
@@ -157,17 +218,26 @@ async function main() {
         
         // Clear existing content
         const files = await fs.readdir(CONTENT_DIR);
-        await Promise.all(files.map(file => 
-            fs.unlink(path.join(CONTENT_DIR, file))
-        ));
+        console.log('Found existing files:', files);
+        
+        await Promise.all(files.map(file => {
+            const filepath = path.join(CONTENT_DIR, file);
+            console.log('Deleting file:', filepath);
+            return fs.unlink(filepath);
+        }));
         console.log('Cleared existing content files');
 
         // Write new content files
+        console.log('Starting to write new content files...');
         await Promise.all(messages.map(writeMessageFile));
         
         console.log(`Successfully processed ${messages.length} messages`);
     } catch (error) {
-        console.error('Error in main process:', error);
+        console.error('Error in main process:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code
+        });
         process.exit(1);  // Exit with error code
     }
 }
