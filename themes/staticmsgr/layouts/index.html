@@ -29,7 +29,7 @@
                     </div>
                     <div class="message-content" data-message-msgtype="{{ $msgType }}">
                         {{ if eq $msgType 4724 }}
-                            {{ upper .Content }}
+                            {{- upper .RawContent -}}
                         {{ else }}
                             {{ .Content }}
                         {{ end }}
