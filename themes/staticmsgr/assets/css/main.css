@@ -198,7 +198,7 @@ html[data-theme="dark"] .sun-icon {
 
 .timestamp {
     font-size: 0.8rem;
-    color: var(--text-secondary);
+    color: #ACACAC;
     opacity: 0.2;
 }
 

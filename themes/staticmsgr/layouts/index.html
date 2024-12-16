@@ -2,7 +2,7 @@
     <div id="messages-container">
         {{ range (where .Site.RegularPages "Section" "messages").ByDate }}
             {{ if eq .Params.type "system" }}
-                <div class="system-message" data-message-type="system" data-message-content="{{ .Content }}">
+                <div class="system-message" data-message-type="system">
                     {{ .Content }}
                 </div>
             {{ else }}
@@ -16,16 +16,7 @@
                 {{ end }}
                 <article class="message-card {{ if .Params.outgoing }}outgoing{{ end }}" 
                     data-message-type="message"
-                    data-message-content="{{ .Content }}"
-                    data-message-username="{{ .Params.username }}"
-                    data-message-timestamp="{{ .Date.Format "15:04 01/02/2006" }}"
-                    data-message-outgoing="{{ .Params.outgoing }}"
-                    data-message-avatar="{{ .Params.avatar | default "/images/default-avatar.png" }}"
                     data-message-msgtype="{{ $msgType }}"
-                    {{ with .Params.msgimage }}data-message-image="{{ . }}"{{ end }}
-                    {{ with .Params.button1 }}data-message-button1="{{ . }}"{{ end }}
-                    {{ with .Params.button2 }}data-message-button2="{{ . }}"{{ end }}
-                    {{ with .Params.button3 }}data-message-button3="{{ . }}"{{ end }}
                 >
                     <div class="message-header">
                         {{ if not .Params.outgoing }}
@@ -59,76 +50,4 @@
             {{ end }}
         {{ end }}
     </div>
-
-    <script>
-        // Function to extract message data from DOM elements
-        function extractMessageData(element) {
-            const dataset = element.dataset;
-            const msgType = parseInt(dataset.messageMsgtype) || 0;
-            return {
-                type: dataset.messageType,
-                content: dataset.messageContent,
-                msgType: msgType,
-                messageCategory: msgType === 4724 ? 'Secret' : msgType === 4727 ? 'System' : 'Regular',
-                ...(dataset.messageType === 'message' && {
-                    username: dataset.messageUsername,
-                    timestamp: dataset.messageTimestamp,
-                    outgoing: dataset.messageOutgoing === "true",
-                    avatar: dataset.messageAvatar,
-                    image: dataset.messageImage,
-                    button1: dataset.messageButton1,
-                    button2: dataset.messageButton2,
-                    button3: dataset.messageButton3
-                })
-            };
-        }
-
-        // Get all messages and log the last one
-        window.addEventListener('load', () => {
-            const messageElements = document.querySelectorAll('.system-message, .message-card');
-            if (messageElements.length > 0) {
-                const lastMessage = messageElements[messageElements.length - 1];
-                const messageData = extractMessageData(lastMessage);
-                
-                console.log('Last Message Information:', messageData);
-                console.log('Total messages loaded:', messageElements.length);
-                console.log('Message Details:', {
-                    type: messageData.type,
-                    category: messageData.messageCategory,
-                    msgType: messageData.msgType,
-                    content: messageData.content,
-                    ...(messageData.type === 'message' && {
-                        username: messageData.username,
-                        timestamp: messageData.timestamp,
-                        isOutgoing: messageData.outgoing,
-                        avatar: messageData.avatar,
-                        hasImage: !!messageData.image,
-                        buttons: [messageData.button1, messageData.button2, messageData.button3].filter(Boolean)
-                    })
-                });
-            }
-        });
-
-        // Debug font loading with retry mechanism
-        function checkFontLoading() {
-            document.fonts.ready.then(function() {
-                console.log('Font loading status:');
-                let psaCodeFound = false;
-                document.fonts.forEach(function(font) {
-                    console.log(`Font: ${font.family}, Status: ${font.status}, Style: ${font.style}, Weight: ${font.weight}`);
-                    if (font.family === 'PSA-Code') {
-                        psaCodeFound = true;
-                        console.log('PSA-Code font details:', font);
-                    }
-                });
-                if (!psaCodeFound) {
-                    console.warn('PSA-Code font not found in loaded fonts!');
-                }
-            });
-        }
-
-        // Check font loading immediately and after a delay
-        checkFontLoading();
-        setTimeout(checkFontLoading, 2000);
-    </script>
 {{ end }}
