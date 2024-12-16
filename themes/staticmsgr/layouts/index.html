@@ -1,5 +1,25 @@
 {{ define "main" }}
+    <script>
+        // Array to store all message data
+        let messages = [];
+    </script>
     {{ range (where .Site.RegularPages "Section" "messages").ByDate }}
+        <script>
+            messages.push({
+                type: {{ if eq .Params.type "system" }}"system"{{ else }}"message"{{ end }},
+                content: {{ .Content | jsonify }},
+                {{ if ne .Params.type "system" }}
+                username: {{ .Params.username | jsonify }},
+                timestamp: "{{ .Date.Format "15:04 01/02/2006" }}",
+                outgoing: {{ .Params.outgoing | jsonify }},
+                avatar: {{ .Params.avatar | default "/images/default-avatar.png" | jsonify }},
+                {{ with .Params.msgimage }}image: {{ . | jsonify }},{{ end }}
+                {{ with .Params.button1 }}button1: {{ . | jsonify }},{{ end }}
+                {{ with .Params.button2 }}button2: {{ . | jsonify }},{{ end }}
+                {{ with .Params.button3 }}button3: {{ . | jsonify }},{{ end }}
+                {{ end }}
+            });
+        </script>
         {{ if eq .Params.type "system" }}
             <div class="system-message">{{ .Content }}</div>
         {{ else }}
@@ -31,4 +51,14 @@
             </article>
         {{ end }}
     {{ end }}
+    <script>
+        // Log the last message when all messages are loaded
+        window.addEventListener('load', () => {
+            if (messages.length > 0) {
+                console.log('Last Message Information:');
+                console.log(messages[messages.length - 1]);
+                console.log('Total messages loaded:', messages.length);
+            }
+        });
+    </script>
 {{ end }}
