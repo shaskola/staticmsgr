@@ -33,10 +33,15 @@ jobs:
           mkdir -p scripts
           mkdir -p static/fonts
           mkdir -p static/images
+          mkdir -p public/fonts
           
       - name: Copy static assets
         run: |
           cp -r static/* public/ || true
+          # Ensure font file exists in public directory
+          if [ -f "static/fonts/psa-code.otf" ]; then
+            cp static/fonts/psa-code.otf public/fonts/
+          fi
           
       - name: Install dependencies
         run: |

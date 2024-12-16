@@ -4,6 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ .Title }}</title>
+    <style>
+        @font-face {
+            font-family: 'PSA-Code';
+            src: url('{{ .Site.BaseURL }}fonts/psa-code.otf') format('opentype');
+            font-display: swap;
+        }
+    </style>
     {{ $style := resources.Get "css/main.css" | resources.Minify }}
     <link rel="stylesheet" href="{{ $style.RelPermalink }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap">
