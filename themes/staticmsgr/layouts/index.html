@@ -28,7 +28,7 @@
                             <span class="timestamp">{{ .Date.Format "15:04" }} {{ .Date.Format "01/02/2006" }}</span>
                         </div>
                     </div>
-                    <div class="message-content {{ if eq .Params.msgType 4724 }}secret-message{{ end }}">
+                    <div class="message-content {{ if eq (string .Params.msgType) "4724" }}secret-message{{ end }}">
                         {{ .Content }}
                         {{ with .Params.msgimage }}
                             <img class="message-image" src="{{ . }}" alt="Message attachment">
@@ -81,7 +81,7 @@
                 
                 // Additional debug information
                 console.log('Message Type:', messageData.type);
-                console.log('Message Category:', messageData.msgType === '4724' ? 'Secret' : messageData.msgType === '4727' ? 'System' : 'Regular');
+                console.log('Message Category:', messageData.msgType === "4724" ? 'Secret' : messageData.msgType === "4727" ? 'System' : 'Regular');
                 console.log('Content:', messageData.content);
                 if (messageData.type === 'message') {
                     console.log('Username:', messageData.username);
@@ -94,6 +94,14 @@
                     if (messageData.button3) console.log('Button 3:', messageData.button3);
                 }
             }
+        });
+
+        // Debug font loading
+        document.fonts.ready.then(function() {
+            console.log('Font loading status:');
+            document.fonts.forEach(function(font) {
+                console.log(`${font.family}: ${font.status}`);
+            });
         });
     </script>
 {{ end }}
