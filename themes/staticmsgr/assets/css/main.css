@@ -149,6 +149,10 @@ html[data-theme="dark"] .sun-icon {
     background: var(--chat-bubble-bg);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border-color);
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
 }
 
 .message-card.outgoing {
@@ -189,6 +193,12 @@ html[data-theme="dark"] .sun-icon {
 
 .message-content {
     line-height: 1.5;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    max-width: 100%;
+    white-space: pre-wrap;
 }
 
 .message-image {
