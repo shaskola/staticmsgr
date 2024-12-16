@@ -4,12 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ .Title }}</title>
-    <!-- Preload PSA-Code font -->
+    <!-- Preload both font formats -->
     <link rel="preload" href="/fonts/psa-code.otf" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="/fonts/psa-code.ttf" as="font" type="font/ttf" crossorigin>
     <style>
         @font-face {
             font-family: 'PSA-Code';
-            src: url('/fonts/psa-code.otf') format('opentype');
+            src: url('/fonts/psa-code.otf') format('opentype'),
+                 url('/fonts/psa-code.ttf') format('truetype');
             font-display: block;
             font-weight: normal;
             font-style: normal;
@@ -27,18 +29,31 @@
                 console.log(`Font: ${font.family}, Status: ${font.status}, Style: ${font.style}, Weight: ${font.weight}`);
                 if (font.family === 'PSA-Code') {
                     psaCodeFound = true;
-                    console.log('PSA-Code font details:', font);
+                    console.log('PSA-Code font details:', {
+                        family: font.family,
+                        status: font.status,
+                        style: font.style,
+                        weight: font.weight,
+                        loaded: font.loaded,
+                        display: font.display
+                    });
                 }
             });
             if (!psaCodeFound) {
-                console.warn('PSA-Code font not found in loaded fonts!');
+                console.warn('PSA-Code font not found in loaded fonts! Attempting to force load...');
                 // Try to force load the font
                 const testDiv = document.createElement('div');
-                testDiv.style.fontFamily = 'PSA-Code';
-                testDiv.style.opacity = '0';
-                testDiv.textContent = 'Test';
+                testDiv.style.fontFamily = 'PSA-Code, monospace';
+                testDiv.style.visibility = 'hidden';
+                testDiv.textContent = 'Test PSA-Code Font Loading';
                 document.body.appendChild(testDiv);
-                setTimeout(() => document.body.removeChild(testDiv), 100);
+                
+                // Check again after a short delay
+                setTimeout(() => {
+                    const computedFont = window.getComputedStyle(testDiv).fontFamily;
+                    console.log('Computed font-family:', computedFont);
+                    document.body.removeChild(testDiv);
+                }, 100);
             }
         });
     </script>
