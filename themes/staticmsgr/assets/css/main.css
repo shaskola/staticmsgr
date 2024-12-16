@@ -283,12 +283,4 @@ html[data-theme="dark"] .sun-icon {
 /* Secret message styles */
 .message-content[data-message-msgtype="4724"] {
     font-family: 'PSA-Code', monospace !important;
-    font-size: 1.1em;
-    letter-spacing: 0.05em;
-    color: var(--accent-color);
-}
-
-.message-card[data-message-msgtype="4724"] {
-    background: var(--bg-secondary);
-    border-color: var(--accent-color);
 }
