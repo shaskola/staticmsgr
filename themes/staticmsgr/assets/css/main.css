@@ -280,20 +280,15 @@ html[data-theme="dark"] .sun-icon {
     opacity: 0.9;
 }
 
-.message-card[data-msgtype="secret"] {
+/* Secret message styles */
+.message-card[data-message-msgtype="4724"] {
     background: var(--bg-secondary);
     border-color: var(--accent-color);
 }
 
-.message-card[data-msgtype="secret"] .message-content {
+.message-card[data-message-msgtype="4724"] .message-content {
     font-family: 'PSA-Code', monospace !important;
     font-size: 1.1em;
     letter-spacing: 0.05em;
     color: var(--accent-color);
-}
-
-/* Add secret message styles */
-.secret-message {
-    font-family: 'PSA-Code', monospace;
-    letter-spacing: 0.05em;
 }

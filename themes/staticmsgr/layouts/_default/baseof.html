@@ -4,11 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ .Title }}</title>
+    <!-- Preload PSA-Code font -->
+    <link rel="preload" href="{{ .Site.BaseURL }}fonts/psa-code.otf" as="font" type="font/otf" crossorigin>
     <style>
         @font-face {
             font-family: 'PSA-Code';
             src: url('{{ .Site.BaseURL }}fonts/psa-code.otf') format('opentype');
-            font-display: swap;
+            font-display: block; /* Change to block to prevent FOIT */
             font-weight: normal;
             font-style: normal;
         }
@@ -17,20 +19,14 @@
     <link rel="stylesheet" href="{{ $style.RelPermalink }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap">
     <script>
-        // Preload the PSA-code font
-        const fontPreload = document.createElement('link');
-        fontPreload.href = '{{ .Site.BaseURL }}fonts/psa-code.otf';
-        fontPreload.rel = 'preload';
-        fontPreload.as = 'font';
-        fontPreload.type = 'font/otf';
-        fontPreload.crossOrigin = 'anonymous';
-        document.head.appendChild(fontPreload);
-
-        // Font loading debug
+        // Font loading debug with more details
         document.fonts.ready.then(function() {
             console.log('Font loading status:');
             document.fonts.forEach(function(font) {
-                console.log(`${font.family}: ${font.status}`);
+                console.log(`Font: ${font.family}, Status: ${font.status}, Style: ${font.style}, Weight: ${font.weight}`);
+                if (font.family === 'PSA-Code') {
+                    console.log('PSA-Code font details:', font);
+                }
             });
         });
     </script>

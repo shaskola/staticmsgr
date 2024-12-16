@@ -41,18 +41,23 @@ function createMarkdownContent(message) {
     const formattedDate = parsedDate.format('YYYY-MM-DD[T]HH:mm:ss[Z]');
     console.log('Formatted date:', formattedDate, 'for message:', message.ID);
 
+    // Get message type
+    const msgTypeId = message.msgType?.id;
+    console.log('Message Type ID:', msgTypeId, 'for message:', message.ID);
+
     const frontmatter = [
         '---',
         `title: "${message.ID}"`,
         `date: ${formattedDate}`,
-        message.msgType?.id === 4727 ? 'type: "system"' : '',
-        message.msgType?.id === 4728 ? 'type: "secret"' : '',
+        msgTypeId === 4727 ? 'type: "system"' : '',
+        msgTypeId === 4724 ? 'type: "secret"' : '',
         message.character?.[0]?.value ? `username: "${message.character[0].value}"` : '',
         message.avatar?.[0]?.url ? `avatar: "${message.avatar[0].url}"` : '',
         message.Image?.[0]?.url ? `msgimage: "${message.Image[0].url}"` : '',
         message['button 1 text'] ? `button1: "${message['button 1 text']}"` : '',
         message['button 2 text'] ? `button2: "${message['button 2 text']}"` : '',
         message['button 3 text'] ? `button3: "${message['button 3 text']}"` : '',
+        'msgType: ' + (msgTypeId || 0),  // Add msgType to frontmatter
         '---',
         '',
         message.message || ''
@@ -78,9 +83,10 @@ async function writeMessageFile(message) {
         return;
     }
 
+    const msgTypeId = message.msgType?.id;
     const filename = `${String(message.ID).padStart(5, '0')}-${
-        message.msgType?.id === 4727 ? 'system' : 
-        message.msgType?.id === 4728 ? 'secret' : 
+        msgTypeId === 4727 ? 'system' : 
+        msgTypeId === 4724 ? 'secret' : 
         'message'
     }.md`;
     const filepath = path.join(CONTENT_DIR, filename);
