@@ -290,3 +290,9 @@ html[data-theme="dark"] .sun-icon {
     letter-spacing: 0.05em;
     color: var(--accent-color);
 }
+
+/* Add secret message styles */
+.secret-message {
+    font-family: 'PSA-Code', monospace;
+    letter-spacing: 0.05em;
+}
