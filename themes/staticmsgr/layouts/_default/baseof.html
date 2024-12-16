@@ -4,15 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ .Title }}</title>
-    <!-- Preload both font formats -->
-    <link rel="preload" href="/fonts/psa-code.otf" as="font" type="font/otf" crossorigin>
-    <link rel="preload" href="/fonts/psa-code.ttf" as="font" type="font/ttf" crossorigin>
     <style>
         @font-face {
             font-family: 'PSA-Code';
             src: url('/fonts/psa-code.otf') format('opentype'),
-                 url('/fonts/psa-code.ttf') format('truetype');
-            font-display: block;
+                url('/fonts/psa-code.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
         }
@@ -34,13 +30,12 @@
                         status: font.status,
                         style: font.style,
                         weight: font.weight,
-                        loaded: font.loaded,
-                        display: font.display
+                        loaded: font.loaded
                     });
                 }
             });
             if (!psaCodeFound) {
-                console.warn('PSA-Code font not found in loaded fonts! Attempting to force load...');
+                console.warn('PSA-Code font not found in loaded fonts!');
                 // Try to force load the font
                 const testDiv = document.createElement('div');
                 testDiv.style.fontFamily = 'PSA-Code, monospace';
