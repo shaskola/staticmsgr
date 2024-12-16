@@ -110,6 +110,17 @@ function createMarkdownContent(message) {
     // Get message type ID for determining message category
     const msgTypeId = message.msgType?.id || 0;
     
+    // Process message content
+    let messageContent = message.message || '';
+    // Convert to uppercase if it's a secret message
+    if (msgTypeId === MSG_TYPE.SECRET) {
+        messageContent = messageContent.toUpperCase();
+        console.log('%c🔒 Secret message converted to uppercase:', 'color: #9C27B0; font-weight: bold;', {
+            original: message.message,
+            converted: messageContent
+        });
+    }
+    
     // Log message details for debugging
     console.log('%c📋 Message details:', 'color: #607D8B; font-weight: bold;', {
         ID: message.ID,
@@ -138,7 +149,7 @@ function createMarkdownContent(message) {
         message['button 3 text'] ? `button3: "${message['button 3 text']}"` : '',
         '---',
         '',
-        message.message || ''  // Message content
+        messageContent  // Use the processed message content
     ].filter(Boolean).join('\n');  // Remove empty lines and join
 
     console.log('%c📑 Generated frontmatter for message:', 'color: #009688; font-weight: bold;', message.ID);
