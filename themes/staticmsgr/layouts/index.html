@@ -1,63 +1,95 @@
 {{ define "main" }}
-    <script>
-        // Array to store all message data
-        let messages = [];
-    </script>
-    {{ range (where .Site.RegularPages "Section" "messages").ByDate }}
-        <script>
-            messages.push({
-                type: {{ if eq .Params.type "system" }}"system"{{ else }}"message"{{ end }},
-                content: {{ .Content | jsonify }},
-                {{ if ne .Params.type "system" }}
-                username: {{ .Params.username | jsonify }},
-                timestamp: "{{ .Date.Format "15:04 01/02/2006" }}",
-                outgoing: {{ .Params.outgoing | jsonify }},
-                avatar: {{ .Params.avatar | default "/images/default-avatar.png" | jsonify }},
-                {{ with .Params.msgimage }}image: {{ . | jsonify }},{{ end }}
-                {{ with .Params.button1 }}button1: {{ . | jsonify }},{{ end }}
-                {{ with .Params.button2 }}button2: {{ . | jsonify }},{{ end }}
-                {{ with .Params.button3 }}button3: {{ . | jsonify }},{{ end }}
-                {{ end }}
-            });
-        </script>
-        {{ if eq .Params.type "system" }}
-            <div class="system-message">{{ .Content }}</div>
-        {{ else }}
-            <article class="message-card {{ if .Params.outgoing }}outgoing{{ end }}">
-                <div class="message-header">
-                    {{ if not .Params.outgoing }}
-                        <img class="avatar" src="{{ .Params.avatar | default "/images/default-avatar.png" }}" alt="{{ .Params.username }}">
-                    {{ end }}
-                    <div class="message-meta">
-                        <span class="username">{{ .Params.username }}</span>
-                        <span class="timestamp">{{ .Date.Format "15:04" }} {{ .Date.Format "01/02/2006" }}</span>
-                    </div>
-                </div>
-                <div class="message-content">
+    <div id="messages-container">
+        {{ range (where .Site.RegularPages "Section" "messages").ByDate }}
+            {{ if eq .Params.type "system" }}
+                <div class="system-message" data-message-type="system" data-message-content="{{ .Content }}">
                     {{ .Content }}
-                    {{ with .Params.msgimage }}
-                        <img class="message-image" src="{{ . }}" alt="Message attachment">
-                    {{ end }}
-                    {{ with .Params.button1 }}
-                        <div class="button">{{ . }}</div>
-                    {{ end }}
-                    {{ with .Params.button2 }}
-                        <div class="button">{{ . }}</div>
-                    {{ end }}
-                    {{ with .Params.button3 }}
-                        <div class="button">{{ . }}</div>
-                    {{ end }}
                 </div>
-            </article>
+            {{ else }}
+                <article class="message-card {{ if .Params.outgoing }}outgoing{{ end }}" 
+                    data-message-type="message"
+                    data-message-content="{{ .Content }}"
+                    data-message-username="{{ .Params.username }}"
+                    data-message-timestamp="{{ .Date.Format "15:04 01/02/2006" }}"
+                    data-message-outgoing="{{ .Params.outgoing }}"
+                    data-message-avatar="{{ .Params.avatar | default "/images/default-avatar.png" }}"
+                    {{ with .Params.msgimage }}data-message-image="{{ . }}"{{ end }}
+                    {{ with .Params.button1 }}data-message-button1="{{ . }}"{{ end }}
+                    {{ with .Params.button2 }}data-message-button2="{{ . }}"{{ end }}
+                    {{ with .Params.button3 }}data-message-button3="{{ . }}"{{ end }}
+                >
+                    <div class="message-header">
+                        {{ if not .Params.outgoing }}
+                            <img class="avatar" src="{{ .Params.avatar | default "/images/default-avatar.png" }}" alt="{{ .Params.username }}">
+                        {{ end }}
+                        <div class="message-meta">
+                            <span class="username">{{ .Params.username }}</span>
+                            <span class="timestamp">{{ .Date.Format "15:04" }} {{ .Date.Format "01/02/2006" }}</span>
+                        </div>
+                    </div>
+                    <div class="message-content">
+                        {{ .Content }}
+                        {{ with .Params.msgimage }}
+                            <img class="message-image" src="{{ . }}" alt="Message attachment">
+                        {{ end }}
+                        {{ with .Params.button1 }}
+                            <div class="button">{{ . }}</div>
+                        {{ end }}
+                        {{ with .Params.button2 }}
+                            <div class="button">{{ . }}</div>
+                        {{ end }}
+                        {{ with .Params.button3 }}
+                            <div class="button">{{ . }}</div>
+                        {{ end }}
+                    </div>
+                </article>
+            {{ end }}
         {{ end }}
-    {{ end }}
+    </div>
+
     <script>
-        // Log the last message when all messages are loaded
+        // Function to extract message data from DOM elements
+        function extractMessageData(element) {
+            const dataset = element.dataset;
+            return {
+                type: dataset.messageType,
+                content: dataset.messageContent,
+                ...(dataset.messageType === 'message' && {
+                    username: dataset.messageUsername,
+                    timestamp: dataset.messageTimestamp,
+                    outgoing: dataset.messageOutgoing === "true",
+                    avatar: dataset.messageAvatar,
+                    image: dataset.messageImage,
+                    button1: dataset.messageButton1,
+                    button2: dataset.messageButton2,
+                    button3: dataset.messageButton3
+                })
+            };
+        }
+
+        // Get all messages and log the last one
         window.addEventListener('load', () => {
-            if (messages.length > 0) {
-                console.log('Last Message Information:');
-                console.log(messages[messages.length - 1]);
-                console.log('Total messages loaded:', messages.length);
+            const messageElements = document.querySelectorAll('.system-message, .message-card');
+            if (messageElements.length > 0) {
+                const lastMessage = messageElements[messageElements.length - 1];
+                const messageData = extractMessageData(lastMessage);
+                
+                console.log('Last Message Information:', messageData);
+                console.log('Total messages loaded:', messageElements.length);
+                
+                // Additional debug information
+                console.log('Message Type:', messageData.type);
+                console.log('Content:', messageData.content);
+                if (messageData.type === 'message') {
+                    console.log('Username:', messageData.username);
+                    console.log('Timestamp:', messageData.timestamp);
+                    console.log('Is Outgoing:', messageData.outgoing);
+                    console.log('Avatar:', messageData.avatar);
+                    if (messageData.image) console.log('Has Image:', messageData.image);
+                    if (messageData.button1) console.log('Button 1:', messageData.button1);
+                    if (messageData.button2) console.log('Button 2:', messageData.button2);
+                    if (messageData.button3) console.log('Button 3:', messageData.button3);
+                }
             }
         });
     </script>
