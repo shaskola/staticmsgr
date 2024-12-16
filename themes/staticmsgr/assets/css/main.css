@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'PSA-Code';
-    src: url('/fonts/psa-code.otf') format('opentype');
+    src: url('../fonts/psa-code.otf') format('opentype');
     font-display: swap;
 }
 

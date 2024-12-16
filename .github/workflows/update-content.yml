@@ -31,6 +31,12 @@ jobs:
         run: |
           mkdir -p content/messages
           mkdir -p scripts
+          mkdir -p static/fonts
+          mkdir -p static/images
+          
+      - name: Copy static assets
+        run: |
+          cp -r static/* public/ || true
           
       - name: Install dependencies
         run: |
