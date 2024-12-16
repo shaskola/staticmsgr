@@ -6,6 +6,14 @@
                     {{ .Content }}
                 </div>
             {{ else }}
+                {{ $msgType := 0 }}
+                {{ with .Params.msgType }}
+                    {{ if eq (printf "%T" .) "map[string]interface {}" }}
+                        {{ $msgType = .id }}
+                    {{ else }}
+                        {{ $msgType = . }}
+                    {{ end }}
+                {{ end }}
                 <article class="message-card {{ if .Params.outgoing }}outgoing{{ end }}" 
                     data-message-type="message"
                     data-message-content="{{ .Content }}"
@@ -13,7 +21,7 @@
                     data-message-timestamp="{{ .Date.Format "15:04 01/02/2006" }}"
                     data-message-outgoing="{{ .Params.outgoing }}"
                     data-message-avatar="{{ .Params.avatar | default "/images/default-avatar.png" }}"
-                    data-message-msgtype="{{ .Params.msgType }}"
+                    data-message-msgtype="{{ $msgType }}"
                     {{ with .Params.msgimage }}data-message-image="{{ . }}"{{ end }}
                     {{ with .Params.button1 }}data-message-button1="{{ . }}"{{ end }}
                     {{ with .Params.button2 }}data-message-button2="{{ . }}"{{ end }}
@@ -28,7 +36,7 @@
                             <span class="timestamp">{{ .Date.Format "15:04" }} {{ .Date.Format "01/02/2006" }}</span>
                         </div>
                     </div>
-                    <div class="message-content {{ if eq (string .Params.msgType) "4724" }}secret-message{{ end }}">
+                    <div class="message-content {{ if eq $msgType 4724 }}secret-message{{ end }}">
                         {{ .Content }}
                         {{ with .Params.msgimage }}
                             <img class="message-image" src="{{ . }}" alt="Message attachment">
@@ -55,7 +63,7 @@
             return {
                 type: dataset.messageType,
                 content: dataset.messageContent,
-                msgType: dataset.messageMsgtype,  // Added msgType to logging
+                msgType: parseInt(dataset.messageMsgtype) || 0,  // Convert to number
                 ...(dataset.messageType === 'message' && {
                     username: dataset.messageUsername,
                     timestamp: dataset.messageTimestamp,
@@ -81,7 +89,7 @@
                 
                 // Additional debug information
                 console.log('Message Type:', messageData.type);
-                console.log('Message Category:', messageData.msgType === "4724" ? 'Secret' : messageData.msgType === "4727" ? 'System' : 'Regular');
+                console.log('Message Category:', messageData.msgType === 4724 ? 'Secret' : messageData.msgType === 4727 ? 'System' : 'Regular');
                 console.log('Content:', messageData.content);
                 if (messageData.type === 'message') {
                     console.log('Username:', messageData.username);
