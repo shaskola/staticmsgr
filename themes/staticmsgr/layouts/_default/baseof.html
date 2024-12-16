@@ -7,7 +7,7 @@
     <style>
         @font-face {
             font-family: 'PSA-Code';
-            src: url('/fonts/psa-code.otf') format('opentype');
+            src: url('{{ .Site.BaseURL }}fonts/psa-code.otf') format('opentype');
             font-display: swap;
             font-weight: normal;
             font-style: normal;
@@ -19,7 +19,7 @@
     <script>
         // Preload the PSA-code font
         const fontPreload = document.createElement('link');
-        fontPreload.href = '/fonts/psa-code.otf';
+        fontPreload.href = '{{ .Site.BaseURL }}fonts/psa-code.otf';
         fontPreload.rel = 'preload';
         fontPreload.as = 'font';
         fontPreload.type = 'font/otf';
