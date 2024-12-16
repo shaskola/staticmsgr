@@ -288,4 +288,8 @@ html[data-theme="dark"] .sun-icon {
 /* Secret message styles */
 .message-content[data-message-msgtype="4724"] {
     font-family: 'PSA-Code', monospace !important;
+    font-size: 1.5em;
+    line-height: 1.2;
+    display: inline-block;
+    width: 100%;
 }

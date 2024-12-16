@@ -37,7 +37,11 @@
                         </div>
                     </div>
                     <div class="message-content" data-message-msgtype="{{ $msgType }}">
-                        {{ .Content }}
+                        {{ if eq $msgType 4724 }}
+                            {{ upper .Content }}
+                        {{ else }}
+                            {{ .Content }}
+                        {{ end }}
                         {{ with .Params.msgimage }}
                             <img class="message-image" src="{{ . }}" alt="Message attachment">
                         {{ end }}
