@@ -46,6 +46,7 @@ function createMarkdownContent(message) {
         `title: "${message.ID}"`,
         `date: ${formattedDate}`,
         message.msgType?.id === 4727 ? 'type: "system"' : '',
+        message.msgType?.id === 4728 ? 'type: "secret"' : '',
         message.character?.[0]?.value ? `username: "${message.character[0].value}"` : '',
         message.avatar?.[0]?.url ? `avatar: "${message.avatar[0].url}"` : '',
         message.Image?.[0]?.url ? `msgimage: "${message.Image[0].url}"` : '',
@@ -77,7 +78,11 @@ async function writeMessageFile(message) {
         return;
     }
 
-    const filename = `${String(message.ID).padStart(5, '0')}-${message.msgType?.id === 4727 ? 'system' : 'message'}.md`;
+    const filename = `${String(message.ID).padStart(5, '0')}-${
+        message.msgType?.id === 4727 ? 'system' : 
+        message.msgType?.id === 4728 ? 'secret' : 
+        'message'
+    }.md`;
     const filepath = path.join(CONTENT_DIR, filename);
     
     await fs.writeFile(filepath, content, 'utf8');

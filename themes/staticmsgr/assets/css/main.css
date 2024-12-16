@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'PSA-Code';
-    src: url('/staticmsgr/fonts/psa-code.otf') format('opentype');
+    src: url('/fonts/psa-code.otf') format('opentype');
     font-display: swap;
 }
 
@@ -285,8 +285,14 @@ html[data-theme="dark"] .sun-icon {
     opacity: 0.9;
 }
 
+.message-card[data-msgtype="secret"] {
+    background: var(--bg-secondary);
+    border-color: var(--accent-color);
+}
+
 .message-card[data-msgtype="secret"] .message-content {
-    font-family: 'PSA-Code', 'Noto Sans', sans-serif !important;
-    font-weight: normal;
-    letter-spacing: 0.5px;
+    font-family: 'PSA-Code', monospace;
+    font-size: 1.1em;
+    letter-spacing: 0.05em;
+    color: var(--accent-color);
 }
