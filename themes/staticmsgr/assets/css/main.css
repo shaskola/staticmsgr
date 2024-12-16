@@ -285,7 +285,7 @@ html[data-theme="dark"] .sun-icon {
 }
 
 .message-card[data-msgtype="secret"] .message-content {
-    font-family: 'PSA-Code', monospace;
+    font-family: 'PSA-Code', monospace !important;
     font-size: 1.1em;
     letter-spacing: 0.05em;
     color: var(--accent-color);

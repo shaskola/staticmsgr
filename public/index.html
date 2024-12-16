@@ -8,13 +8,22 @@
     <style>
         @font-face {
             font-family: 'PSA-Code';
-            src: url('http://localhost:1313/staticmsgr/fonts/psa-code.otf') format('opentype');
+            src: url('http://localhost:1313/staticmsgr//fonts/psa-code.otf') format('opentype');
             font-display: swap;
         }
     </style>
     
     <link rel="stylesheet" href="/staticmsgr/css/main.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap">
+    <script>
+        
+        document.fonts.ready.then(function() {
+            console.log('All fonts loaded');
+            document.fonts.forEach(function(font) {
+                console.log(font.family, font.status);
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="app-container">

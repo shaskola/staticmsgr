@@ -7,13 +7,22 @@
     <style>
         @font-face {
             font-family: 'PSA-Code';
-            src: url('{{ .Site.BaseURL }}fonts/psa-code.otf') format('opentype');
+            src: url('{{ .Site.BaseURL }}/fonts/psa-code.otf') format('opentype');
             font-display: swap;
         }
     </style>
     {{ $style := resources.Get "css/main.css" | resources.Minify }}
     <link rel="stylesheet" href="{{ $style.RelPermalink }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap">
+    <script>
+        // Font loading debug
+        document.fonts.ready.then(function() {
+            console.log('All fonts loaded');
+            document.fonts.forEach(function(font) {
+                console.log(font.family, font.status);
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="app-container">

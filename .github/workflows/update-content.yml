@@ -37,11 +37,11 @@ jobs:
           
       - name: Copy static assets
         run: |
+          echo "Listing static/fonts directory:"
+          ls -la static/fonts/
           cp -r static/* public/ || true
-          # Ensure font file exists in public directory
-          if [ -f "static/fonts/psa-code.otf" ]; then
-            cp static/fonts/psa-code.otf public/fonts/
-          fi
+          echo "Listing public/fonts directory after copy:"
+          ls -la public/fonts/
           
       - name: Install dependencies
         run: |
