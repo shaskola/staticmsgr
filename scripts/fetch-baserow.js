@@ -68,7 +68,7 @@ function createMarkdownContent(message) {
         hasDate: !!message['Send-Date'],
         hasMessage: !!message.message,
         msgType: message.msgType,
-        characterlink: message.characterlink,
+        nickname: message.nickname,
         avatar: message.avatar,
         buttons: {
             button1: message['button 1 text'],
@@ -127,7 +127,8 @@ function createMarkdownContent(message) {
         date: formattedDate,
         type: msgTypeId === MSG_TYPE.SECRET ? 'secret' : 
               msgTypeId === MSG_TYPE.SYSTEM ? 'system' : 'regular',
-        msgTypeId
+        msgTypeId,
+        nickname: message.nickname?.[0]?.value
     });
 
     // Create frontmatter array with message metadata
@@ -140,8 +141,8 @@ function createMarkdownContent(message) {
         // Message type (system: 4754, secret: 4753)
         msgTypeId === MSG_TYPE.SYSTEM ? 'type: "system"' : '',
         msgTypeId === MSG_TYPE.SECRET ? 'type: "secret"' : '',
-        // Optional fields with null coalescing
-        message.characterlink?.[0]?.value ? `username: "${message.characterlink[0].value}"` : '',
+        // Use nickname instead of characterlink for username
+        message.nickname?.[0]?.value ? `username: "${message.nickname[0].value}"` : '',
         message.avatar?.[0]?.url ? `avatar: "${message.avatar[0].url}"` : '',
         message.Image?.[0]?.url ? `msgimage: "${message.Image[0].url}"` : '',
         message['button 1 text'] ? `button1: "${message['button 1 text']}"` : '',
@@ -152,7 +153,10 @@ function createMarkdownContent(message) {
         messageContent  // Use the processed message content
     ].filter(Boolean).join('\n');  // Remove empty lines and join
 
-    console.log('%c📑 Generated frontmatter for message:', 'color: #009688; font-weight: bold;', message.ID);
+    console.log('%c📑 Generated frontmatter for message:', 'color: #009688; font-weight: bold;', {
+        ID: message.ID,
+        nickname: message.nickname?.[0]?.value
+    });
     return frontmatter;
 }
 
