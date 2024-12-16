@@ -377,7 +377,7 @@ html[data-theme="dark"] .sun-icon {
 }
 
 /* Secret message styles */
-.message-content[data-message-msgtype="4724"] {
+.message-content[data-message-msgtype="4753"] {
     font-family: 'PSA-Code', monospace !important;
     font-size: 1.5em;
     line-height: 1.2;
@@ -399,14 +399,14 @@ html[data-theme="dark"] .timestamp {
 }
 
 @media (max-width: 768px) {
-    .message-content[data-message-msgtype="4724"] {
+    .message-content[data-message-msgtype="4753"] {
         font-size: 1.3em;
         letter-spacing: 0.12em;
     }
 }
 
 @media (max-width: 480px) {
-    .message-content[data-message-msgtype="4724"] {
+    .message-content[data-message-msgtype="4753"] {
         font-size: 1.2em;
         letter-spacing: 0.1em;
     }
