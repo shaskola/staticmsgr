@@ -63,12 +63,19 @@ async function fetchMessages() {
  * @returns {string|null} Markdown content or null if invalid
  */
 function createMarkdownContent(message) {
+    // Get username from nickname or fall back to characterlink
+    const username = message.nickname?.[0]?.value || message.characterlink?.[0]?.value;
+    
     console.log('%c📄 Processing message:', 'color: #FF9800; font-weight: bold;', {
         ID: message.ID,
         hasDate: !!message['Send-Date'],
         hasMessage: !!message.message,
         msgType: message.msgType,
-        nickname: message.nickname,
+        username: {
+            final: username,
+            fromNickname: message.nickname?.[0]?.value,
+            fromCharacterlink: message.characterlink?.[0]?.value
+        },
         avatar: message.avatar,
         buttons: {
             button1: message['button 1 text'],
@@ -128,7 +135,10 @@ function createMarkdownContent(message) {
         type: msgTypeId === MSG_TYPE.SECRET ? 'secret' : 
               msgTypeId === MSG_TYPE.SYSTEM ? 'system' : 'regular',
         msgTypeId,
-        nickname: message.nickname?.[0]?.value
+        username: {
+            value: username,
+            source: message.nickname?.[0]?.value ? 'nickname' : 'characterlink'
+        }
     });
 
     // Create frontmatter array with message metadata
@@ -141,8 +151,8 @@ function createMarkdownContent(message) {
         // Message type (system: 4754, secret: 4753)
         msgTypeId === MSG_TYPE.SYSTEM ? 'type: "system"' : '',
         msgTypeId === MSG_TYPE.SECRET ? 'type: "secret"' : '',
-        // Use nickname instead of characterlink for username
-        message.nickname?.[0]?.value ? `username: "${message.nickname[0].value}"` : '',
+        // Use nickname with fallback to characterlink for username
+        username ? `username: "${username}"` : '',
         message.avatar?.[0]?.url ? `avatar: "${message.avatar[0].url}"` : '',
         message.Image?.[0]?.url ? `msgimage: "${message.Image[0].url}"` : '',
         message['button 1 text'] ? `button1: "${message['button 1 text']}"` : '',
@@ -155,7 +165,10 @@ function createMarkdownContent(message) {
 
     console.log('%c📑 Generated frontmatter for message:', 'color: #009688; font-weight: bold;', {
         ID: message.ID,
-        nickname: message.nickname?.[0]?.value
+        username: {
+            value: username,
+            source: message.nickname?.[0]?.value ? 'nickname' : 'characterlink'
+        }
     });
     return frontmatter;
 }
