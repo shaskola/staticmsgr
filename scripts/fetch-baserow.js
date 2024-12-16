@@ -7,11 +7,49 @@ const moment = require('moment');   // For date manipulation
 // API configuration
 const BASEROW_URL = 'https://showcase.newhideaway.com/api/database/rows/table/787/';  // Baserow API endpoint
 const CONTENT_DIR = path.join(process.cwd(), 'content', 'messages');  // Directory for markdown files
+const LOG_FILE = path.join(process.cwd(), 'content', '_debug.md');  // Log file path
 
 // Message type constants
 const MSG_TYPE = {
     SECRET: 4753,
     SYSTEM: 4754
+};
+
+// Custom logger that writes to both console and file
+const logger = {
+    logs: [],
+    log(...args) {
+        const msg = args.map(arg => 
+            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+        ).join(' ');
+        console.log(...args);
+        this.logs.push(`[LOG] ${msg}`);
+    },
+    error(...args) {
+        const msg = args.map(arg => 
+            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+        ).join(' ');
+        console.error(...args);
+        this.logs.push(`[ERROR] ${msg}`);
+    },
+    async saveToFile() {
+        const content = [
+            '---',
+            'title: "Debug Log"',
+            'date: ' + new Date().toISOString(),
+            '---',
+            '',
+            '# Debug Log',
+            '',
+            'This file contains debug information from the last content update.',
+            '',
+            '## Logs',
+            '',
+            ...this.logs
+        ].join('\n');
+
+        await fs.writeFile(LOG_FILE, content, 'utf8');
+    }
 };
 
 /**
@@ -20,7 +58,7 @@ const MSG_TYPE = {
  */
 async function fetchMessages() {
     try {
-        console.log('Fetching messages from:', BASEROW_URL);
+        logger.log('Fetching messages from:', BASEROW_URL);
         
         // Make GET request to Baserow API with authentication
         const response = await axios({
@@ -31,7 +69,7 @@ async function fetchMessages() {
             }
         });
 
-        console.log('API Response:', {
+        logger.log('API Response:', {
             count: response.data.count,
             next: response.data.next,
             previous: response.data.previous,
@@ -40,12 +78,12 @@ async function fetchMessages() {
 
         // Log first message as sample
         if (response.data.results.length > 0) {
-            console.log('Sample message structure:', JSON.stringify(response.data.results[0], null, 2));
+            logger.log('Sample message structure:', JSON.stringify(response.data.results[0], null, 2));
         }
 
         return response.data.results;
     } catch (error) {
-        console.error('Error fetching messages:', {
+        logger.error('Error fetching messages:', {
             message: error.message,
             status: error.response?.status,
             statusText: error.response?.statusText,
@@ -61,7 +99,7 @@ async function fetchMessages() {
  * @returns {string|null} Markdown content or null if invalid
  */
 function createMarkdownContent(message) {
-    console.log('Creating markdown for message:', {
+    logger.log('Creating markdown for message:', {
         ID: message.ID,
         hasDate: !!message['Send-Date'],
         hasMessage: !!message.message,
@@ -78,14 +116,14 @@ function createMarkdownContent(message) {
     // Validate and format the date
     const sendDate = message['Send-Date'];
     if (!sendDate) {
-        console.error('No Send-Date found for message:', message.ID);
+        logger.error('No Send-Date found for message:', message.ID);
         return null;
     }
     
     // Parse and validate the date
     const parsedDate = moment(sendDate);
     if (!parsedDate.isValid()) {
-        console.error('Invalid date for message:', message.ID, 'Date:', sendDate);
+        logger.error('Invalid date for message:', message.ID, 'Date:', sendDate);
         return null;
     }
 
@@ -96,7 +134,7 @@ function createMarkdownContent(message) {
     const msgTypeId = message.msgType?.id || 0;
     
     // Log message details for debugging
-    console.log('Processing message:', {
+    logger.log('Processing message:', {
         ID: message.ID,
         date: formattedDate,
         type: msgTypeId === MSG_TYPE.SECRET ? 'secret' : 
@@ -126,7 +164,7 @@ function createMarkdownContent(message) {
         message.message || ''  // Message content
     ].filter(Boolean).join('\n');  // Remove empty lines and join
 
-    console.log('Generated frontmatter:', frontmatter);
+    logger.log('Generated frontmatter:', frontmatter);
     return frontmatter;
 }
 
@@ -137,12 +175,12 @@ function createMarkdownContent(message) {
 async function ensureContentDirectory() {
     try {
         const dir = path.resolve(CONTENT_DIR);
-        console.log('Ensuring directory exists:', dir);
+        logger.log('Ensuring directory exists:', dir);
         await fs.mkdir(CONTENT_DIR, { recursive: true });  // Create directory if it doesn't exist
-        console.log('Directory ready:', dir);
+        logger.log('Directory ready:', dir);
     } catch (error) {
         if (error.code !== 'EEXIST') {  // Ignore "already exists" error
-            console.error('Error creating directory:', {
+            logger.error('Error creating directory:', {
                 code: error.code,
                 message: error.message,
                 path: error.path
@@ -158,11 +196,11 @@ async function ensureContentDirectory() {
  * @returns {Promise<void>}
  */
 async function writeMessageFile(message) {
-    console.log('Writing message file for ID:', message.ID);
+    logger.log('Writing message file for ID:', message.ID);
     
     const content = createMarkdownContent(message);
     if (!content) {
-        console.error('Failed to create content for message:', message.ID);
+        logger.error('Failed to create content for message:', message.ID);
         return;
     }
 
@@ -175,7 +213,7 @@ async function writeMessageFile(message) {
     }.md`;
     const filepath = path.join(CONTENT_DIR, filename);
     
-    console.log('Writing file:', {
+    logger.log('Writing file:', {
         filename,
         filepath,
         contentLength: content.length,
@@ -186,9 +224,9 @@ async function writeMessageFile(message) {
     // Write the file
     try {
         await fs.writeFile(filepath, content, 'utf8');
-        console.log('Successfully written file:', filename);
+        logger.log('Successfully written file:', filename);
     } catch (error) {
-        console.error('Error writing file:', {
+        logger.error('Error writing file:', {
             filename,
             error: error.message,
             code: error.code
@@ -205,39 +243,50 @@ async function writeMessageFile(message) {
  */
 async function main() {
     try {
-        console.log('Starting content update process...');
-        console.log('Current working directory:', process.cwd());
+        logger.log('Starting content update process...');
+        logger.log('Current working directory:', process.cwd());
         
         // Ensure content directory exists
         await ensureContentDirectory();
-        console.log('Content directory ready');
+        logger.log('Content directory ready');
         
         // Fetch messages from Baserow
         const messages = await fetchMessages();
-        console.log(`Fetched ${messages.length} messages from Baserow`);
+        logger.log(`Fetched ${messages.length} messages from Baserow`);
         
         // Clear existing content
         const files = await fs.readdir(CONTENT_DIR);
-        console.log('Found existing files:', files);
+        logger.log('Found existing files:', files);
         
         await Promise.all(files.map(file => {
             const filepath = path.join(CONTENT_DIR, file);
-            console.log('Deleting file:', filepath);
+            logger.log('Deleting file:', filepath);
             return fs.unlink(filepath);
         }));
-        console.log('Cleared existing content files');
+        logger.log('Cleared existing content files');
 
         // Write new content files
-        console.log('Starting to write new content files...');
+        logger.log('Starting to write new content files...');
         await Promise.all(messages.map(writeMessageFile));
         
-        console.log(`Successfully processed ${messages.length} messages`);
+        logger.log(`Successfully processed ${messages.length} messages`);
+
+        // Save logs to file
+        await logger.saveToFile();
     } catch (error) {
-        console.error('Error in main process:', {
+        logger.error('Error in main process:', {
             message: error.message,
             stack: error.stack,
             code: error.code
         });
+        
+        // Try to save logs even if there was an error
+        try {
+            await logger.saveToFile();
+        } catch (e) {
+            console.error('Failed to save logs:', e);
+        }
+        
         process.exit(1);  // Exit with error code
     }
 }
