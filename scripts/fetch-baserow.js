@@ -1,18 +1,31 @@
-const axios = require('axios');
-const fs = require('fs').promises;
-const path = require('path');
-const moment = require('moment');
+// Required dependencies
+const axios = require('axios');     // For making HTTP requests
+const fs = require('fs').promises;  // For file system operations with promises
+const path = require('path');       // For handling file paths
+const moment = require('moment');   // For date manipulation
 
-const BASEROW_URL = 'https://showcase.newhideaway.com/api/database/rows/table/736/';
-const CONTENT_DIR = path.join(process.cwd(), 'content', 'messages');
+// API configuration
+const BASEROW_URL = 'https://showcase.newhideaway.com/api/database/rows/table/736/';  // Baserow API endpoint
+const CONTENT_DIR = path.join(process.cwd(), 'content', 'messages');  // Directory for markdown files
 
+// Message type constants
+const MSG_TYPE = {
+    SECRET: 4724,
+    SYSTEM: 4727
+};
+
+/**
+ * Fetches messages from Baserow API
+ * @returns {Promise<Array>} Array of message objects
+ */
 async function fetchMessages() {
     try {
+        // Make GET request to Baserow API with authentication
         const response = await axios({
             method: 'GET',
-            url: `${BASEROW_URL}?user_field_names=true`,
+            url: `${BASEROW_URL}?user_field_names=true`,  // Use human-readable field names
             headers: {
-                'Authorization': `Token ${process.env.BASEROW_TOKEN}`
+                'Authorization': `Token ${process.env.BASEROW_TOKEN}`  // Auth token from environment variable
             }
         });
 
@@ -23,6 +36,11 @@ async function fetchMessages() {
     }
 }
 
+/**
+ * Creates markdown content from a message object
+ * @param {Object} message - Message object from Baserow
+ * @returns {string|null} Markdown content or null if invalid
+ */
 function createMarkdownContent(message) {
     // Validate and format the date
     const sendDate = message['Send-Date'];
@@ -31,51 +49,72 @@ function createMarkdownContent(message) {
         return null;
     }
     
+    // Parse and validate the date
     const parsedDate = moment(sendDate);
     if (!parsedDate.isValid()) {
         console.error('Invalid date for message:', message.ID, 'Date:', sendDate);
         return null;
     }
 
-    // Format date as: 2024-01-20T15:30:00-07:00
+    // Format date as: 2024-01-20T15:30:00Z
     const formattedDate = parsedDate.format('YYYY-MM-DD[T]HH:mm:ss[Z]');
-    console.log('Formatted date:', formattedDate, 'for message:', message.ID);
 
-    // Get message type
-    const msgTypeId = message.msgType?.id;
-    console.log('Message Type ID:', msgTypeId, 'for message:', message.ID);
+    // Get message type ID for determining message category
+    const msgTypeId = message.msgType?.id || 0;
+    
+    // Log message details for debugging
+    console.log('Processing message:', {
+        ID: message.ID,
+        date: formattedDate,
+        type: msgTypeId === MSG_TYPE.SECRET ? 'secret' : 
+              msgTypeId === MSG_TYPE.SYSTEM ? 'system' : 'regular',
+        msgTypeId
+    });
 
+    // Create frontmatter array with message metadata
     const frontmatter = [
         '---',
         `title: "${message.ID}"`,
         `date: ${formattedDate}`,
-        msgTypeId === 4727 ? 'type: "system"' : '',
-        msgTypeId === 4724 ? 'type: "secret"' : '',
+        // Always include msgType in frontmatter
+        `msgType: ${msgTypeId}`,
+        // Message type (system: 4727, secret: 4724)
+        msgTypeId === MSG_TYPE.SYSTEM ? 'type: "system"' : '',
+        msgTypeId === MSG_TYPE.SECRET ? 'type: "secret"' : '',
+        // Optional fields with null coalescing
         message.character?.[0]?.value ? `username: "${message.character[0].value}"` : '',
         message.avatar?.[0]?.url ? `avatar: "${message.avatar[0].url}"` : '',
         message.Image?.[0]?.url ? `msgimage: "${message.Image[0].url}"` : '',
         message['button 1 text'] ? `button1: "${message['button 1 text']}"` : '',
         message['button 2 text'] ? `button2: "${message['button 2 text']}"` : '',
         message['button 3 text'] ? `button3: "${message['button 3 text']}"` : '',
-        'msgType: ' + (msgTypeId || 0),  // Add msgType to frontmatter
         '---',
         '',
-        message.message || ''
-    ].filter(Boolean).join('\n');
+        message.message || ''  // Message content
+    ].filter(Boolean).join('\n');  // Remove empty lines and join
 
     return frontmatter;
 }
 
+/**
+ * Ensures the content directory exists
+ * @returns {Promise<void>}
+ */
 async function ensureContentDirectory() {
     try {
-        await fs.mkdir(CONTENT_DIR, { recursive: true });
+        await fs.mkdir(CONTENT_DIR, { recursive: true });  // Create directory if it doesn't exist
     } catch (error) {
-        if (error.code !== 'EEXIST') {
+        if (error.code !== 'EEXIST') {  // Ignore "already exists" error
             throw error;
         }
     }
 }
 
+/**
+ * Writes a message to a markdown file
+ * @param {Object} message - Message object from Baserow
+ * @returns {Promise<void>}
+ */
 async function writeMessageFile(message) {
     const content = createMarkdownContent(message);
     if (!content) {
@@ -83,37 +122,55 @@ async function writeMessageFile(message) {
         return;
     }
 
-    const msgTypeId = message.msgType?.id;
-    const filename = `${String(message.ID).padStart(5, '0')}-${
-        msgTypeId === 4727 ? 'system' : 
-        msgTypeId === 4724 ? 'secret' : 
+    // Create filename based on message type
+    const msgTypeId = message.msgType?.id || 0;
+    const filename = `${String(message.ID).padStart(5, '0')}-${  // Pad ID with zeros
+        msgTypeId === MSG_TYPE.SYSTEM ? 'system' : 
+        msgTypeId === MSG_TYPE.SECRET ? 'secret' : 
         'message'
     }.md`;
     const filepath = path.join(CONTENT_DIR, filename);
     
+    // Write the file
     await fs.writeFile(filepath, content, 'utf8');
     console.log('Written file:', filename);
 }
 
+/**
+ * Main function to orchestrate the content update process
+ * 1. Creates content directory if needed
+ * 2. Fetches messages from Baserow
+ * 3. Clears existing content
+ * 4. Writes new content files
+ */
 async function main() {
     try {
+        console.log('Starting content update process...');
+        
+        // Ensure content directory exists
         await ensureContentDirectory();
+        console.log('Content directory ready');
+        
+        // Fetch messages from Baserow
         const messages = await fetchMessages();
+        console.log(`Fetched ${messages.length} messages from Baserow`);
         
         // Clear existing content
         const files = await fs.readdir(CONTENT_DIR);
         await Promise.all(files.map(file => 
             fs.unlink(path.join(CONTENT_DIR, file))
         ));
+        console.log('Cleared existing content files');
 
-        // Write new content
+        // Write new content files
         await Promise.all(messages.map(writeMessageFile));
         
         console.log(`Successfully processed ${messages.length} messages`);
     } catch (error) {
         console.error('Error in main process:', error);
-        process.exit(1);
+        process.exit(1);  // Exit with error code
     }
 }
 
+// Run the script
 main(); 

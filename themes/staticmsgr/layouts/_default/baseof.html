@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ .Title }}</title>
     <!-- Preload PSA-Code font -->
-    <link rel="preload" href="{{ .Site.BaseURL }}fonts/psa-code.otf" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="/fonts/psa-code.otf" as="font" type="font/otf" crossorigin>
     <style>
         @font-face {
             font-family: 'PSA-Code';
-            src: url('{{ .Site.BaseURL }}fonts/psa-code.otf') format('opentype');
-            font-display: block; /* Change to block to prevent FOIT */
+            src: url('/fonts/psa-code.otf') format('opentype');
+            font-display: block;
             font-weight: normal;
             font-style: normal;
         }
@@ -22,12 +22,24 @@
         // Font loading debug with more details
         document.fonts.ready.then(function() {
             console.log('Font loading status:');
+            let psaCodeFound = false;
             document.fonts.forEach(function(font) {
                 console.log(`Font: ${font.family}, Status: ${font.status}, Style: ${font.style}, Weight: ${font.weight}`);
                 if (font.family === 'PSA-Code') {
+                    psaCodeFound = true;
                     console.log('PSA-Code font details:', font);
                 }
             });
+            if (!psaCodeFound) {
+                console.warn('PSA-Code font not found in loaded fonts!');
+                // Try to force load the font
+                const testDiv = document.createElement('div');
+                testDiv.style.fontFamily = 'PSA-Code';
+                testDiv.style.opacity = '0';
+                testDiv.textContent = 'Test';
+                document.body.appendChild(testDiv);
+                setTimeout(() => document.body.removeChild(testDiv), 100);
+            }
         });
     </script>
 </head>
