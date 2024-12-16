@@ -294,6 +294,7 @@ html[data-theme="dark"] .sun-icon {
 
     .message-content[data-message-msgtype="4724"] {
         font-size: 1.3em;
+        letter-spacing: 0.4em;
     }
 
     .avatar {
@@ -344,6 +345,7 @@ html[data-theme="dark"] .sun-icon {
 
     .message-content[data-message-msgtype="4724"] {
         font-size: 1.2em;
+        letter-spacing: 0.3em;
     }
 
     .app-header {
@@ -381,4 +383,5 @@ html[data-theme="dark"] .sun-icon {
     line-height: 1.2;
     width: 100%;
     word-break: break-word;
+    letter-spacing: 0.5em;
 }
