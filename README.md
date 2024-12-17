@@ -2,6 +2,38 @@
 
 A static messaging application built with Hugo that integrates with a Baserow database backend. This project allows you to create and manage message-based interactions with customizable characters.
 
+## How It Works
+
+The Static Messenger creates an interactive messaging experience by combining static site generation with dynamic data from Baserow:
+
+1. **Message Creation**:
+   - Messages are stored in the Baserow database with predefined fields
+   - Each message can include text content, images, and up to 3 interactive buttons
+   - Messages are linked to specific characters and include metadata like send date and type
+
+2. **Data Flow**:
+   - The Hugo site fetches message data during build time
+   - Messages are organized by characters and conversation threads
+   - The build process generates static pages that display the messages in chronological order
+
+3. **Character System**:
+   - Characters are managed through the Baserow database
+   - Each character has a profile with name, nickname, and avatar
+   - Characters can be linked to multiple messages
+   - Message counts are automatically tracked per character
+
+4. **Message Types and Interactions**:
+   - Regular messages: Standard character dialogue
+   - System messages: Special notifications or events
+   - Secret messages: Hidden content with specific triggers
+   - Interactive buttons: Can trigger new message chains or actions
+
+5. **Build Process**:
+   - Hugo fetches the latest data from Baserow API
+   - Generates static HTML pages for all conversations
+   - Creates character profiles and message archives
+   - Builds interactive elements that work without server-side processing
+
 ## Features
 
 - Static site generation using Hugo
